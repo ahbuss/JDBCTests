@@ -69,12 +69,31 @@ public class TestConnection {
             statement.executeUpdate(dropTable);
         }
 
-        String createTable = "CREATE TABLE " + newTableName + " (UNIQUE_ID INTEGER, SITE_ID VARCHAR(32))";
+        String createTable = "CREATE TABLE " + newTableName + " (UNIQUE_ID INTEGER NOT NULL, "
+                + "SITE_ID VARCHAR(32) NOT NULL)";
         statement.executeUpdate(createTable);
-        
+
         String insert = "INSERT INTO " + newTableName + " VALUES (1, 'Site1')";
         statement.executeUpdate(insert);
-        
+        insert = "INSERT INTO " + newTableName + " (SITE_ID, UNIQUE_ID) VALUES ('Site2', 2)";
+        statement.executeUpdate(insert);
+
+        selectString = "SELECT * FROM " + newTableName;
+        rs = statement.executeQuery(selectString);
+        rsmd = rs.getMetaData();
+
+        System.out.println("Table: " + newTableName);
+        for (int column = 1; column <= rsmd.getColumnCount(); ++column) {
+            System.out.print("\t" + rsmd.getColumnName(column));
+        }
+        System.out.println();
+
+        while (rs.next()) {
+            for (int column = 1; column <= rsmd.getColumnCount(); ++column) {
+                System.out.print("\t" + rs.getObject(column));
+            }
+            System.out.println();
+        }
         statement.close();
         connection.close();
     }
